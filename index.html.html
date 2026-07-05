@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#0a0a0f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>English Daily Speaking</title>
+
+<style>
+/* =============================================
+   CSS VARIABLES & RESET
+   ============================================= */
+:root {
+  --bg-deep:     #0a0a0f;
+  --bg-card:     #13131c;
+  --bg-elevated: #1c1c2a;
+  --bg-glass:    rgba(255,255,255,0.04);
+  --border:      rgba(255,255,255,0.08);
+  --border-glow: rgba(99,179,255,0.3);
+
+  --accent:      #63b3ff;
+  --accent-alt:  #a78bfa;
+  --accent-warm: #fb923c;
+  --accent-green:#34d399;
+  --accent-pink: #f472b6;
+
+  --text-primary:   #f0f0f8;
+  --text-secondary: #8888aa;
+  --text-muted:     #44445a;
+
+  --gradient-a: linear-gradient(135deg, #63b3ff, #a78bfa);
+  --gradient-b: linear-gradient(135deg, #fb923c, #f472b6);
+  --gradient-c: linear-gradient(135deg, #34d399, #63b3ff);
+
+  --radius-sm:  10px;
+  --radius-md:  16px;
+  --radius-lg:  24px;
+  --radius-xl:  32px;
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 30px rgba(99,179,255,0.15);
+
+  --nav-h: 72px;
+  --safe-bottom: env(safe-area-inset-bottom, 16px);
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* =============================================
+   SCROLLBAR
+   ============================================= */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* =============================================
+   APP SHELL
+   ============================================= */
+#app {
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+/* Ambient background glow */
+#app::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(99,179,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+#app::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(167,139,250,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =============================================
+   SCREENS
+   ============================================= */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(30px);
+  transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1),
+              transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  z-index: 1;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+.screen.exit-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* =============================================
+   SCROLL AREA
+   ============================================= */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* =============================================
+   BOTTOM NAVIGATION
+   ============================================= */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--nav-h) + var(--safe-bottom));
+  background: rgba(13,13,20,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  z-index: 100;
+  display: none;
+}
+.bottom-nav.visible { display: flex; }
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.nav-item:active .nav-icon { transform: scale(0.85); }
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+
+.nav-item.active .nav-label { color: var(--accent); }
+.nav-item.active .nav-icon svg { stroke: var(--accent); }
+.nav-item.active .nav-icon svg path,
+.nav-item.active .nav-icon svg circle,
+.nav-item.active .nav-icon svg rect { stroke: var(--accent); }
+
+/* Nav active dot */
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 4px 4px;
+}
+
+/* =============================================
+   SPLASH SCREEN
+   ============================================= */
+#screen-splash {
+  background: var(--bg-deep);
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+.splash-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  background: var(--gradient-a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 0 40px rgba(99,179,255,0.3), 0 0 80px rgba(167,139,250,0.15);
+  animation: pulse-logo 3s ease-in-out infinite;
+}
+@keyframes pulse-logo {
+  0%,100% { box-shadow: 0 0 40px rgba(99,179,255,0.3), 0 0 80px rgba(167,139,250,0.15); }
+  50%      { box-shadow: 0 0 60px rgba(99,179,255,0.5), 0 0 100px rgba(167,139,250,0.25); }
+}
+
+.splash-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  background: var(--gradient-a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.splash-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  max-width: 280px;
+}
+
+.splash-quote {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  max-width: 320px;
+  text-align: left;
+  position: relative;
+}
+.splash-quote::before {
+  content: '"';
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  font-size: 48px;
+  font-family: var(--font-display);
+  color: var(--accent);
+  line-height: 1;
+}
+.splash-quote p {
+  font-size: 15px;
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.splash-quote span {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.btn-primary {
+  width: 100%;
+  max-width: 320px;
+  padding: 18px 32px;
+  background: var(--gradient-a);
+  border: none;
+  border-radius: var(--radius-xl);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+}
+.btn-primary:active { transform: scale(0.96); }
+.btn-primary:hover  { filter: brightness(1.1); }
+
+/* =============================================
+   HEADER
+   ============================================= */
+.screen-header {
+  padding: 56px 20px 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-greeting {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.header-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.avatar-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gradient-a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  flex-shrink: 0;
+}
+.avatar-btn:active { transform: scale(0.9); }
+
+/* =============================================
+   HOME SCREEN
+   ============================================= */
+.section { padding: 0 20px; margin-bottom: 24px; }
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* Streak + XP banner */
+.stats-banner {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+.stat-chip {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s;
+}
+.stat-chip:active { transform: scale(0.97); }
+.stat-icon { font-size: 24px; flex-shrink: 0; }
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.stat-lbl { font-size: 11px; color: var(--text-secondary); }
+
+/* Daily goal bar */
+.daily-card {
+  margin: 0 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.daily-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gradient-a);
+}
+.daily-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.daily-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+.daily-badge {
+  background: rgba(99,179,255,0.12);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--gradient-a);
+  border-radius: 8px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+}
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.btn-continue {
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--gradient-a);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-continue:active { transform: scale(0.97); }
+
+/* Category cards */
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+.cat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+}
+.cat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cat-card:active { transform: scale(0.96); }
+.cat-card:active::after { opacity: 1; background: rgba(255,255,255,0.03); }
+
+.cat-emoji { font-size: 28px; margin-bottom: 10px; display: block; }
+.cat-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.cat-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.cat-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+/* =============================================
+   LEARN SCREEN
+   ============================================= */
+.learn-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.learn-tabs::-webkit-scrollbar { display: none; }
+
+.tab-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  font-weight: 700;
+}
+
+/* Phrase card */
+.phrase-card {
+  margin: 0 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.phrase-card-inner { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.phrase-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.phrase-en {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.phrase-phonetic {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.phrase-pt {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.phrase-example {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+}
+.phrase-example p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.phrase-example strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Phrase actions */
+.phrase-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.btn-icon {
+  flex: 0 0 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-icon:active { transform: scale(0.85); }
+.btn-icon svg { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; }
+.btn-icon.playing svg { stroke: var(--accent); }
+
+.btn-next {
+  flex: 1;
+  height: 52px;
+  border-radius: 26px;
+  border: none;
+  background: var(--gradient-a);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-next:active { transform: scale(0.96); }
+
+.phrase-counter {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 12px 0;
+}
+
+/* Flip animation */
+.phrase-card.flip-out {
+  opacity: 0;
+  transform: translateX(40px) scale(0.95);
+}
+.phrase-card.flip-in {
+  animation: slide-in 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes slide-in {
+  from { opacity:0; transform: translateX(-40px) scale(0.95); }
+  to   { opacity:1; transform: translateX(0) scale(1); }
+}
+
+/* =============================================
+   CHALLENGE SCREEN
+   ============================================= */
+.challenge-header {
+  padding: 0 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.xp-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(251,146,60,0.12);
+  color: var(--accent-warm);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.challenge-card {
+  margin: 0 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+.challenge-type {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent-alt);
+  margin-bottom: 12px;
+}
+.challenge-question {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+.challenge-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.option-btn {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.option-btn:active { transform: scale(0.98); }
+.option-btn.correct {
+  border-color: var(--accent-green);
+  background: rgba(52,211,153,0.1);
+  color: var(--accent-green);
+}
+.option-btn.wrong {
+  border-color: #f87171;
+  background: rgba(248,113,113,0.1);
+  color: #f87171;
+}
+.option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+
+/* Fill in the blank */
+.fill-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+}
+.fill-input:focus { border-color: var(--accent); }
+.fill-input.correct { border-color: var(--accent-green); }
+.fill-input.wrong   { border-color: #f87171; }
+
+.btn-check {
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--gradient-a);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.btn-check:active { transform: scale(0.97); }
+
+/* Word order */
+.word-drop-zone {
+  min-height: 56px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+  transition: border-color 0.2s;
+}
+.word-drop-zone.has-words { border-color: var(--accent); }
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.word-chip {
+  padding: 8px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  user-select: none;
+}
+.word-chip:active { transform: scale(0.92); }
+.word-chip.selected {
+  background: rgba(99,179,255,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.word-chip.placed { opacity: 0.3; pointer-events: none; }
+
+/* Feedback toast */
+.feedback-toast {
+  position: fixed;
+  bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 999;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.feedback-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.feedback-toast.correct { background: var(--accent-green); color: #000; }
+.feedback-toast.wrong   { background: #f87171; color: #000; }
+
+/* Challenge score */
+.challenge-score-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 16px;
+}
+.score-dots {
+  display: flex;
+  gap: 6px;
+}
+.score-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  transition: all 0.3s ease;
+}
+.score-dot.done { background: var(--accent-green); transform: scale(1.2); }
+.score-dot.wrong { background: #f87171; }
+
+/* =============================================
+   PROFILE SCREEN
+   ============================================= */
+.profile-hero {
+  padding: 0 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--gradient-a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 30px rgba(99,179,255,0.25);
+}
+.profile-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.profile-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  background: rgba(99,179,255,0.1);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+/* XP Level bar */
+.xp-bar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin: 0 20px 20px;
+}
+.xp-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.xp-labels strong { color: var(--text-primary); }
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+}
+.stat-card-val {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.stat-card-lbl {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Achievements */
+.achievements-list {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.achievement-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.achievement-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.achievement-name { font-size: 14px; font-weight: 600; }
+.achievement-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.achievement-item.locked { opacity: 0.4; }
+.achievement-check {
+  margin-left: auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.achievement-check svg { width: 12px; height: 12px; stroke: #000; stroke-width: 3; fill: none; }
+
+/* =============================================
+   UTILITY
+   ============================================= */
+.mt-8  { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.gradient-text {
+  background: var(--gradient-a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 20px 20px;
+}
+
+/* =============================================
+   ANIMATED BACKGROUND PARTICLES
+   ============================================= */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.04;
+  animation: float linear infinite;
+}
+@keyframes float {
+  from { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: 0.06; }
+  90%  { opacity: 0.06; }
+  to   { transform: translateY(-20vh) scale(1); opacity: 0; }
+}
+
+/* =============================================
+   RIPPLE EFFECT
+   ============================================= */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transform: scale(0);
+  animation: ripple 0.5s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* =============================================
+   AUDIO WAVE ANIMATION
+   ============================================= */
+.audio-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+.audio-bar {
+  width: 3px;
+  background: var(--accent);
+  border-radius: 3px;
+  animation: wave 0.8s ease-in-out infinite;
+}
+.audio-bar:nth-child(1) { animation-delay: 0s;    height: 40%; }
+.audio-bar:nth-child(2) { animation-delay: 0.1s;  height: 70%; }
+.audio-bar:nth-child(3) { animation-delay: 0.2s;  height: 100%; }
+.audio-bar:nth-child(4) { animation-delay: 0.1s;  height: 70%; }
+.audio-bar:nth-child(5) { animation-delay: 0s;    height: 40%; }
+@keyframes wave {
+  0%,100% { transform: scaleY(0.4); }
+  50%      { transform: scaleY(1); }
+}
+
+/* =============================================
+   LEVEL UP OVERLAY
+   ============================================= */
+.level-up-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+.level-up-overlay.show { display: flex; animation: fade-in 0.3s ease; }
+@keyframes fade-in { from { opacity:0; } to { opacity:1; } }
+.level-up-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--gradient-a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  animation: zoom-in 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 60px rgba(99,179,255,0.4);
+}
+@keyframes zoom-in { from { transform: scale(0); } to { transform: scale(1); } }
+.level-up-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  background: var(--gradient-a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.btn-dismiss {
+  padding: 14px 40px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.btn-dismiss:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+
+<!-- ==================== APP ROOT ==================== -->
+<div id="app">
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- ==================== SPLASH SCREEN ==================== -->
+  <div class="screen active" id="screen-splash">
+    <div class="splash-logo">🗣️</div>
+    <div>
+      <div class="splash-title">English Daily<br>Speaking</div>
+      <div class="splash-sub mt-8">Fale inglês como um nativo</div>
+    </div>
+    <div class="splash-quote">
+      <p>"The limits of my language mean the limits of my world."</p>
+      <span>— Ludwig Wittgenstein</span>
+    </div>
+    <button class="btn-primary" id="btn-start">Start Learning →</button>
+  </div>
+
+  <!-- ==================== HOME SCREEN ==================== -->
+  <div class="screen" id="screen-home">
+    <div class="screen-header">
+      <div class="header-row">
+        <div>
+          <div class="header-greeting" id="home-greeting">Good morning! 👋</div>
+          <div class="header-sub">Keep your streak going!</div>
+        </div>
+        <div class="avatar-btn" id="home-avatar-btn">🧑</div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <!-- Stats -->
+      <div class="stats-banner">
+        <div class="stat-chip">
+          <div class="stat-icon">🔥</div>
+          <div>
+            <div class="stat-value" id="home-streak">0</div>
+            <div class="stat-lbl">Day streak</div>
+          </div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-icon">⭐</div>
+          <div>
+            <div class="stat-value" id="home-xp">0</div>
+            <div class="stat-lbl">Total XP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily goal -->
+      <div class="daily-card">
+        <div class="daily-top">
+          <div class="daily-title">Today's Goal</div>
+          <div class="daily-badge" id="daily-badge">0 / 10</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="daily-progress" style="width:0%"></div>
+        </div>
+        <div class="progress-labels">
+          <span>0 phrases</span>
+          <span>10 phrases</span>
+        </div>
+        <button class="btn-continue" id="btn-continue">Continue Learning →</button>
+      </div>
+
+      <!-- Categories -->
+      <div class="section"><div class="section-label">Categories</div></div>
+      <div class="categories-grid" id="categories-grid">
+        <!-- rendered by JS -->
+      </div>
+
+      <div class="section mt-16">
+        <div class="section-label">Today's Highlight</div>
+        <div class="phrase-card" id="home-phrase-card" style="margin:0;">
+          <div class="phrase-card-inner">
+            <div class="phrase-category-badge" style="background:rgba(99,179,255,0.12);color:var(--accent)">🌟 Daily Phrase</div>
+            <div class="phrase-en" id="home-phrase-en">Loading...</div>
+            <div class="phrase-pt" id="home-phrase-pt"></div>
+          </div>
+          <div class="phrase-actions">
+            <div class="btn-icon" id="home-audio-btn">
+              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <button class="btn-next" onclick="navigateTo('learn')">Learn More →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- nav injected by JS -->
+  </div>
+
+  <!-- ==================== LEARN SCREEN ==================== -->
+  <div class="screen" id="screen-learn">
+    <div class="screen-header">
+      <div class="header-row">
+        <div>
+          <div class="header-greeting">Learn Phrases</div>
+          <div class="header-sub" id="learn-category-sub">Daily Conversations</div>
+        </div>
+        <div class="avatar-btn" style="font-size:18px;background:var(--bg-elevated);border:1px solid var(--border)" id="learn-xp-display">⭐ 0</div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <!-- Category tabs -->
+      <div class="learn-tabs" id="learn-tabs"></div>
+
+      <!-- Phrase counter -->
+      <div class="phrase-counter" id="phrase-counter">1 of 20</div>
+
+      <!-- Phrase card -->
+      <div class="phrase-card" id="phrase-card">
+        <div class="phrase-card-inner">
+          <div class="phrase-category-badge" id="phrase-badge">💬 Daily</div>
+          <div class="phrase-en" id="phrase-en">What's up?</div>
+          <div class="phrase-phonetic" id="phrase-phonetic">/wʌts ʌp/</div>
+          <div class="phrase-pt" id="phrase-pt">Como vai? / E aí?</div>
+          <div class="phrase-example" id="phrase-example">
+            <p><strong>Example:</strong> "Hey John, what's up? Haven't seen you in a while."</p>
+          </div>
+        </div>
+        <div class="phrase-actions">
+          <div class="btn-icon" id="audio-btn" title="Listen">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+          <div class="btn-icon" id="repeat-btn" title="Repeat">
+            <svg viewBox="0 0 24 24"><polyline points="17,1 21,5 17,9"/><path d="M3,11V9a8,8,0,0,1,8-8h10"/><polyline points="7,23 3,19 7,15"/><path d="M21,13v2a8,8,0,0,1-8,8H3"/></svg>
+          </div>
+          <button class="btn-next" id="btn-next-phrase">Next →</button>
+        </div>
+      </div>
+
+      <div style="height:16px"></div>
+    </div>
+  </div>
+
+  <!-- ==================== CHALLENGE SCREEN ==================== -->
+  <div class="screen" id="screen-challenge">
+    <div class="screen-header">
+      <div class="header-row">
+        <div>
+          <div class="header-greeting">Daily Challenge</div>
+          <div class="header-sub">Test your knowledge</div>
+        </div>
+        <div class="xp-badge">⭐ <span id="challenge-xp">0</span> XP</div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <!-- Score dots -->
+      <div class="challenge-score-bar">
+        <div class="score-dots" id="score-dots"></div>
+        <span style="font-size:12px;color:var(--text-secondary);margin-left:auto" id="challenge-score-text">0 / 5</span>
+      </div>
+
+      <!-- Challenge card -->
+      <div class="challenge-card" id="challenge-card">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE SCREEN ==================== -->
+  <div class="screen" id="screen-profile">
+    <div class="screen-header">
+      <div class="header-row">
+        <div class="header-greeting">Profile</div>
+        <div class="avatar-btn" style="font-size:14px;font-weight:700;background:var(--bg-elevated);border:1px solid var(--border);width:auto;padding:0 12px;border-radius:20px" id="profile-level-badge">Lv. 1</div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="profile-hero">
+        <div class="profile-avatar">🧑</div>
+        <div class="profile-name" id="profile-name">Alex Learner</div>
+        <div class="profile-level" id="profile-level-tag">⚡ Beginner</div>
+      </div>
+
+      <!-- XP bar -->
+      <div class="xp-bar-card">
+        <div class="xp-labels">
+          <span>Level <strong id="xp-level">1</strong></span>
+          <span><strong id="xp-current">0</strong> / <strong id="xp-next">100</strong> XP</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="xp-progress-bar" style="width:0%;background:var(--gradient-a)"></div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-val gradient-text" id="p-streak">0</div>
+          <div class="stat-card-lbl">🔥 Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val gradient-text" id="p-xp">0</div>
+          <div class="stat-card-lbl">⭐ Total XP</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val gradient-text" id="p-phrases">0</div>
+          <div class="stat-card-lbl">💬 Phrases Learned</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-val gradient-text" id="p-challenges">0</div>
+          <div class="stat-card-lbl">🏆 Challenges Done</div>
+        </div>
+      </div>
+
+      <div class="section"><div class="section-label">Achievements</div></div>
+      <div class="achievements-list" id="achievements-list">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM NAV ==================== -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="navigateTo('home')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <path d="M3,9.5 L12,2 L21,9.5 V20a1,1,0,0,1-1,1H15V14H9v7H4a1,1,0,0,1-1-1Z"/>
+        </svg>
+      </div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" id="nav-learn" onclick="navigateTo('learn')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <path d="M2,3h6a4,4,0,0,1,4,4v14a3,3,0,0,0-3-3H2Z"/><path d="M22,3h-6a4,4,0,0,0-4,4v14a3,3,0,0,1,3-3h7Z"/>
+        </svg>
+      </div>
+      <div class="nav-label">Learn</div>
+    </div>
+    <div class="nav-item" id="nav-challenge" onclick="navigateTo('challenge')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+      </div>
+      <div class="nav-label">Challenge</div>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="navigateTo('profile')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+          <path d="M20,21v-2a4,4,0,0,0-4-4H8a4,4,0,0,0-4,4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="nav-label">Profile</div>
+    </div>
+  </nav>
+
+  <!-- Feedback toast -->
+  <div class="feedback-toast" id="feedback-toast"></div>
+
+  <!-- Level up overlay -->
+  <div class="level-up-overlay" id="level-up-overlay">
+    <div class="level-up-circle">🎉</div>
+    <div class="level-up-title">Level Up!</div>
+    <p style="color:var(--text-secondary);font-size:15px">You reached Level <span id="new-level">2</span>!</p>
+    <button class="btn-dismiss" onclick="dismissLevelUp()">Awesome! 🔥</button>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+/* =============================================
+   DATA — 20+ Authentic Native Phrases
+   ============================================= */
+const PHRASES = [
+  {
+    en: "What's up?",
+    phonetic: "/wʌts ʌp/",
+    pt: "Como vai? / E aí?",
+    category: "daily",
+    example: '"Hey man, what\'s up? You look stressed."',
+    icon: "💬"
+  },
+  {
+    en: "I'm broke.",
+    phonetic: "/aɪm broʊk/",
+    pt: "Estou sem dinheiro / Tô liso.",
+    category: "slang",
+    example: '"Can\'t go out tonight — I\'m broke until Friday."',
+    icon: "💸"
+  },
+  {
+    en: "This is insane.",
+    phonetic: "/ðɪs ɪz ɪnˈseɪn/",
+    pt: "Isso é louco / Inacreditável!",
+    category: "expressions",
+    example: '"You got tickets to the final? This is insane!"',
+    icon: "🤯"
+  },
+  {
+    en: "I'm down.",
+    phonetic: "/aɪm daʊn/",
+    pt: "Tô dentro / Topo!",
+    category: "slang",
+    example: '"Wanna grab pizza? — I\'m down, let\'s go."',
+    icon: "👍"
+  },
+  {
+    en: "No worries.",
+    phonetic: "/noʊ ˈwɜːrɪz/",
+    pt: "Sem problemas / Tranquilo.",
+    category: "daily",
+    example: '"Sorry I\'m late! — No worries, we just got here."',
+    icon: "😌"
+  },
+  {
+    en: "Hang on.",
+    phonetic: "/hæŋ ɒn/",
+    pt: "Espera um segundo.",
+    category: "daily",
+    example: '"Hang on, let me check my phone real quick."',
+    icon: "✋"
+  },
+  {
+    en: "That's lit.",
+    phonetic: "/ðæts lɪt/",
+    pt: "Isso é demais / Irado!",
+    category: "slang",
+    example: '"The concert last night was absolutely lit."',
+    icon: "🔥"
+  },
+  {
+    en: "You're killing it.",
+    phonetic: "/jɔːr ˈkɪlɪŋ ɪt/",
+    pt: "Você está arrasando!",
+    category: "expressions",
+    example: '"New job, new car, new place — you\'re killing it lately."',
+    icon: "💪"
+  },
+  {
+    en: "Cut it out.",
+    phonetic: "/kʌt ɪt aʊt/",
+    pt: "Para com isso / Chega!",
+    category: "expressions",
+    example: '"Cut it out, you two — stop fighting already."',
+    icon: "🛑"
+  },
+  {
+    en: "It's a long shot.",
+    phonetic: "/ɪts ə lɒŋ ʃɒt/",
+    pt: "É uma chance remota.",
+    category: "expressions",
+    example: '"Getting that job is a long shot, but apply anyway."',
+    icon: "🎯"
+  },
+  {
+    en: "Spill the tea.",
+    phonetic: "/spɪl ðə tiː/",
+    pt: "Conta a fofoca / Fala logo!",
+    category: "slang",
+    example: '"You saw them together? Spill the tea, I need to know everything!"',
+    icon: "☕"
+  },
+  {
+    en: "I have butterflies.",
+    phonetic: "/aɪ hæv ˈbʌtərflaɪz/",
+    pt: "Estou nervoso/ansioso.",
+    category: "expressions",
+    example: '"I have butterflies before every presentation."',
+    icon: "🦋"
+  },
+  {
+    en: "Catch you later.",
+    phonetic: "/kætʃ juː ˈleɪtər/",
+    pt: "A gente se vê / Até mais!",
+    category: "daily",
+    example: '"Gotta run — catch you later, alright?"',
+    icon: "👋"
+  },
+  {
+    en: "My bad.",
+    phonetic: "/maɪ bæd/",
+    pt: "Foi mal / Desculpa.",
+    category: "daily",
+    example: '"Oh, that was your seat? My bad, totally my mistake."',
+    icon: "🤦"
+  },
+  {
+    en: "It's a piece of cake.",
+    phonetic: "/ɪts ə piːs əv keɪk/",
+    pt: "É moleza / Fácil demais.",
+    category: "expressions",
+    example: '"Don\'t stress the exam — it\'s a piece of cake."',
+    icon: "🎂"
+  },
+  {
+    en: "Hit me up.",
+    phonetic: "/hɪt miː ʌp/",
+    pt: "Me chama / Me manda mensagem.",
+    category: "slang",
+    example: '"If you\'re free Saturday, hit me up and we\'ll hang out."',
+    icon: "📱"
+  },
+  {
+    en: "I'm on it.",
+    phonetic: "/aɪm ɒn ɪt/",
+    pt: "Estou nisso / Tô cuidando.",
+    category: "daily",
+    example: '"Can you fix the report? — I\'m on it, give me an hour."',
+    icon: "💼"
+  },
+  {
+    en: "That's sketchy.",
+    phonetic: "/ðæts ˈskɛtʃi/",
+    pt: "Isso é suspeito / Tem algo errado aí.",
+    category: "slang",
+    example: '"He said he\'d pay me back tomorrow — sounds sketchy to me."',
+    icon: "🤨"
+  },
+  {
+    en: "Give me a heads up.",
+    phonetic: "/ɡɪv miː ə hɛdz ʌp/",
+    pt: "Me avisa com antecedência.",
+    category: "expressions",
+    example: '"Next time you\'re running late, give me a heads up."',
+    icon: "📢"
+  },
+  {
+    en: "I'm swamped.",
+    phonetic: "/aɪm swɒmpt/",
+    pt: "Estou sobrecarregado / Cheio de coisa.",
+    category: "daily",
+    example: '"Can\'t grab lunch today — I\'m totally swamped at work."',
+    icon: "😵"
+  },
+  {
+    en: "Chill out.",
+    phonetic: "/tʃɪl aʊt/",
+    pt: "Se acalma / Relaxa.",
+    category: "slang",
+    example: '"Chill out, it\'s not that serious — everything will be fine."',
+    icon: "❄️"
+  },
+  {
+    en: "That's a bummer.",
+    phonetic: "/ðæts ə ˈbʌmər/",
+    pt: "Que pena / Que chato.",
+    category: "expressions",
+    example: '"The festival got cancelled? That\'s a real bummer."',
+    icon: "😔"
+  }
+];
+
+/* Category config */
+const CATEGORIES = [
+  { id: "all",         name: "All",           emoji: "✨", color: "var(--accent)",       bar: "var(--gradient-a)" },
+  { id: "daily",       name: "Daily Talk",    emoji: "💬", color: "var(--accent)",       bar: "var(--gradient-a)" },
+  { id: "slang",       name: "Slang",         emoji: "😎", color: "var(--accent-alt)",   bar: "linear-gradient(135deg,#a78bfa,#f472b6)" },
+  { id: "expressions", name: "Expressions",  emoji: "🧠", color: "var(--accent-green)", bar: "var(--gradient-c)" },
+  { id: "pronunciation",name: "Pronunciation",emoji: "🎙️", color: "var(--accent-warm)", bar: "var(--gradient-b)" },
+];
+
+/* =============================================
+   CHALLENGES DATA
+   ============================================= */
+const CHALLENGES = [
+  {
+    type: "multiple",
+    question: "What does 'I'm broke' mean?",
+    hint: "Escolha a tradução correta.",
+    options: ["Estou com raiva", "Estou sem dinheiro", "Estou cansado", "Estou ocupado"],
+    correct: 1,
+    xp: 10
+  },
+  {
+    type: "fill",
+    question: "Complete: 'Don't worry, I ___ it.' (Tô cuidando disso)",
+    hint: "Preencha o espaço com a palavra correta.",
+    answer: "on",
+    tip: "I'm ___ it.",
+    xp: 15
+  },
+  {
+    type: "multiple",
+    question: "What does 'Spill the tea' mean?",
+    hint: "Qual é a tradução desta expressão?",
+    options: ["Derramar o chá", "Contar a fofoca", "Fazer chá", "Relaxar"],
+    correct: 1,
+    xp: 10
+  },
+  {
+    type: "order",
+    question: "Organize as palavras:",
+    hint: '"Você está arrasando!" em inglês.',
+    words: ["You're", "it", "killing"],
+    answer: "You're killing it",
+    xp: 20
+  },
+  {
+    type: "multiple",
+    question: "Which phrase means 'Que pena!'?",
+    hint: "Escolha a tradução de 'That's a bummer'.",
+    options: ["That's insane!", "Catch you later.", "That's a bummer.", "I'm down."],
+    correct: 2,
+    xp: 10
+  },
+  {
+    type: "fill",
+    question: "Complete: 'This is ___.' (Isso é louco!)",
+    hint: "Palavra que significa 'insano' em inglês informal.",
+    answer: "insane",
+    tip: "This is ___.",
+    xp: 15
+  },
+  {
+    type: "multiple",
+    question: "What does 'Hang on' mean?",
+    hint: "Escolha a melhor tradução.",
+    options: ["Desista", "Espera um segundo", "Saia daqui", "Fique acordado"],
+    correct: 1,
+    xp: 10
+  },
+  {
+    type: "order",
+    question: "Organize as palavras:",
+    hint: '"Me avisa com antecedência."',
+    words: ["me", "Give", "heads", "a", "up"],
+    answer: "Give me a heads up",
+    xp: 20
+  }
+];
+
+/* =============================================
+   STATE & STORAGE
+   ============================================= */
+const STORAGE_KEY = 'eds_progress_v1';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {
+    xp: 0,
+    level: 1,
+    streak: 0,
+    lastActiveDate: null,
+    phrasesLearned: 0,
+    challengesDone: 0,
+    dailyPhrases: 0,
+    achievements: {},
+    currentPhraseIndex: 0,
+    currentCategory: 'all'
+  };
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+// Update streak logic
+(function checkStreak() {
+  const today = new Date().toDateString();
+  if (state.lastActiveDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    if (state.lastActiveDate === yesterday) {
+      state.streak++;
+    } else if (state.lastActiveDate !== today) {
+      state.streak = 1;
+    }
+    state.lastActiveDate = today;
+    state.dailyPhrases = 0; // reset daily
+    saveState();
+  }
+})();
+
+/* =============================================
+   XP & LEVEL SYSTEM
+   ============================================= */
+function xpForLevel(lvl) { return lvl * 100; }
+
+function addXP(amount) {
+  state.xp += amount;
+  const xpNeeded = xpForLevel(state.level);
+  if (state.xp >= xpNeeded) {
+    state.xp -= xpNeeded;
+    state.level++;
+    showLevelUp(state.level);
+  }
+  saveState();
+  refreshAllUI();
+  checkAchievements();
+}
+
+/* =============================================
+   NAVIGATION
+   ============================================= */
+let currentScreen = 'splash';
+
+function navigateTo(screen) {
+  const old = document.getElementById('screen-' + currentScreen);
+  const next = document.getElementById('screen-' + screen);
+  if (!next || currentScreen === screen) return;
+
+  old.classList.add('exit-left');
+  old.classList.remove('active');
+  setTimeout(() => old.classList.remove('exit-left'), 350);
+
+  next.style.transform = 'translateX(30px)';
+  next.classList.add('active');
+  requestAnimationFrame(() => {
+    next.style.transform = '';
+  });
+
+  currentScreen = screen;
+
+  // Nav bar visibility
+  const nav = document.getElementById('bottom-nav');
+  if (screen === 'splash') {
+    nav.classList.remove('visible');
+  } else {
+    nav.classList.add('visible');
+  }
+
+  // Update nav active state
+  ['home','learn','challenge','profile'].forEach(s => {
+    const el = document.getElementById('nav-' + s);
+    if (el) {
+      el.classList.toggle('active', s === screen);
+      // Update icon colors
+      el.querySelector('.nav-icon svg').setAttribute('stroke', s === screen ? 'var(--accent)' : 'var(--text-muted)');
+    }
+  });
+
+  // Refresh screen-specific UI
+  if (screen === 'home') refreshHomeUI();
+  if (screen === 'learn') refreshLearnUI();
+  if (screen === 'challenge') initChallenge();
+  if (screen === 'profile') refreshProfileUI();
+}
+
+/* =============================================
+   PARTICLES
+   ============================================= */
+function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 4 + Math.random() * 8;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${10 + Math.random()*15}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+}
+
+/* =============================================
+   RIPPLE EFFECT
+   ============================================= */
+function addRipple(el, e) {
+  const rect = el.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const size = Math.max(rect.width, rect.height);
+  r.style.cssText = `width:${size}px;height:${size}px;top:${(e.clientY||rect.top+rect.height/2)-rect.top-size/2}px;left:${(e.clientX||rect.left+rect.width/2)-rect.left-size/2}px;`;
+  el.style.position = 'relative';
+  el.style.overflow = 'hidden';
+  el.appendChild(r);
+  setTimeout(() => r.remove(), 500);
+}
+
+/* =============================================
+   GREETING
+   ============================================= */
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning! 🌅";
+  if (h < 18) return "Good afternoon! ☀️";
+  return "Good evening! 🌙";
+}
+
+/* =============================================
+   HOME UI
+   ============================================= */
+function refreshHomeUI() {
+  document.getElementById('home-greeting').textContent = getGreeting();
+  document.getElementById('home-streak').textContent = state.streak;
+  document.getElementById('home-xp').textContent = state.xp;
+
+  const pct = Math.min((state.dailyPhrases / 10) * 100, 100);
+  document.getElementById('daily-progress').style.width = pct + '%';
+  document.getElementById('daily-badge').textContent = `${Math.min(state.dailyPhrases,10)} / 10`;
+
+  // Random daily phrase
+  const p = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+  document.getElementById('home-phrase-en').textContent = p.en;
+  document.getElementById('home-phrase-pt').textContent = p.pt;
+
+  renderCategories();
+}
+
+function renderCategories() {
+  const grid = document.getElementById('categories-grid');
+  const cats = [
+    { id:'daily',       name:'Daily Talk',    emoji:'💬', progress:35, color:'var(--gradient-a)' },
+    { id:'slang',       name:'Slang',         emoji:'😎', progress:20, color:'linear-gradient(135deg,#a78bfa,#f472b6)' },
+    { id:'expressions', name:'Expressions',  emoji:'🧠', progress:15, color:'var(--gradient-c)' },
+    { id:'pronunciation',name:'Pronunciation',emoji:'🎙️', progress:10, color:'var(--gradient-b)' },
+  ];
+  grid.innerHTML = cats.map(c => `
+    <div class="cat-card" onclick="openCategory('${c.id}')">
+      <span class="cat-emoji">${c.emoji}</span>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${PHRASES.filter(p=>p.category===c.id).length} phrases</div>
+      <div class="cat-bar"><div class="cat-bar-fill" style="width:${c.progress}%;background:${c.color}"></div></div>
+    </div>
+  `).join('');
+}
+
+function openCategory(catId) {
+  state.currentCategory = catId;
+  state.currentPhraseIndex = 0;
+  saveState();
+  navigateTo('learn');
+}
+
+/* =============================================
+   LEARN UI
+   ============================================= */
+let filteredPhrases = [];
+let currentPhraseIdx = 0;
+let isPlaying = false;
+
+function refreshLearnUI() {
+  renderLearnTabs();
+  updateFilteredPhrases();
+  renderPhrase();
+  document.getElementById('learn-xp-display').textContent = '⭐ ' + (state.xp + (state.level - 1) * 100 - (state.level - 1) * 100);
+}
+
+function renderLearnTabs() {
+  const tabs = document.getElementById('learn-tabs');
+  tabs.innerHTML = CATEGORIES.map(c => `
+    <div class="tab-pill ${c.id === state.currentCategory ? 'active' : ''}"
+         onclick="selectCategory('${c.id}')">
+      ${c.emoji} ${c.name}
+    </div>
+  `).join('');
+}
+
+function selectCategory(id) {
+  state.currentCategory = id;
+  currentPhraseIdx = 0;
+  saveState();
+  renderLearnTabs();
+  updateFilteredPhrases();
+  renderPhrase();
+  const sub = CATEGORIES.find(c=>c.id===id);
+  document.getElementById('learn-category-sub').textContent = sub ? sub.name : 'All Phrases';
+}
+
+function updateFilteredPhrases() {
+  filteredPhrases = state.currentCategory === 'all'
+    ? PHRASES
+    : PHRASES.filter(p => p.category === state.currentCategory);
+  if (currentPhraseIdx >= filteredPhrases.length) currentPhraseIdx = 0;
+}
+
+function renderPhrase(animate = false) {
+  const card = document.getElementById('phrase-card');
+  const p = filteredPhrases[currentPhraseIdx];
+  if (!p) return;
+
+  if (animate) {
+    card.classList.add('flip-out');
+    setTimeout(() => {
+      card.classList.remove('flip-out');
+      fillPhraseCard(p, card);
+      card.classList.add('flip-in');
+      setTimeout(() => card.classList.remove('flip-in'), 300);
+    }, 200);
+  } else {
+    fillPhraseCard(p, card);
+  }
+
+  document.getElementById('phrase-counter').textContent =
+    `${currentPhraseIdx + 1} of ${filteredPhrases.length}`;
+}
+
+function fillPhraseCard(p, card) {
+  const cat = CATEGORIES.find(c => c.id === p.category) || CATEGORIES[0];
+  document.getElementById('phrase-badge').innerHTML = `${p.icon} ${cat.name}`;
+  document.getElementById('phrase-badge').style.background = `rgba(99,179,255,0.1)`;
+  document.getElementById('phrase-badge').style.color = cat.color;
+  document.getElementById('phrase-en').textContent = p.en;
+  document.getElementById('phrase-phonetic').textContent = p.phonetic;
+  document.getElementById('phrase-pt').textContent = p.pt;
+  document.getElementById('phrase-example').innerHTML =
+    `<p><strong>Example:</strong> ${p.example}</p>`;
+}
+
+/* =============================================
+   AUDIO SIMULATION (Web Speech API or animation)
+   ============================================= */
+function playAudio(text, btnEl) {
+  if (isPlaying) return;
+  isPlaying = true;
+  btnEl.classList.add('playing');
+
+  // Replace icon with wave animation
+  const origHTML = btnEl.innerHTML;
+  btnEl.innerHTML = '<div class="audio-wave">' +
+    Array(5).fill('<div class="audio-bar"></div>').join('') +
+  '</div>';
+
+  // Use Web Speech API if available
+  if ('speechSynthesis' in window) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'en-US';
+    utter.rate = 0.85;
+    utter.onend = () => { stopAudio(btnEl, origHTML); };
+    utter.onerror = () => { stopAudio(btnEl, origHTML); };
+    speechSynthesis.speak(utter);
+    setTimeout(() => { if (isPlaying) stopAudio(btnEl, origHTML); }, 3500);
+  } else {
+    setTimeout(() => stopAudio(btnEl, origHTML), 2000);
+  }
+}
+
+function stopAudio(btnEl, origHTML) {
+  isPlaying = false;
+  btnEl.classList.remove('playing');
+  btnEl.innerHTML = origHTML;
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+}
+
+/* =============================================
+   CHALLENGE ENGINE
+   ============================================= */
+let challengeList = [];
+let challengeIdx = 0;
+let challengeScore = 0;
+let challengeAnswered = false;
+let wordOrder = [];
+
+function initChallenge() {
+  // Shuffle 5 challenges
+  challengeList = [...CHALLENGES].sort(() => Math.random() - 0.5).slice(0, 5);
+  challengeIdx = 0;
+  challengeScore = 0;
+  challengeAnswered = false;
+  renderScoreDots();
+  renderChallenge();
+  document.getElementById('challenge-xp').textContent = state.xp;
+}
+
+function renderScoreDots() {
+  const dots = document.getElementById('score-dots');
+  dots.innerHTML = challengeList.map(() =>
+    '<div class="score-dot"></div>'
+  ).join('');
+  document.getElementById('challenge-score-text').textContent = `${challengeScore} / 5`;
+}
+
+function updateDot(idx, result) {
+  const dot = document.getElementById('score-dots').children[idx];
+  if (dot) { dot.classList.add(result ? 'done' : 'wrong'); }
+  document.getElementById('challenge-score-text').textContent = `${challengeScore} / 5`;
+}
+
+function renderChallenge() {
+  if (challengeIdx >= challengeList.length) {
+    showChallengeComplete();
+    return;
+  }
+  const ch = challengeList[challengeIdx];
+  challengeAnswered = false;
+  const card = document.getElementById('challenge-card');
+
+  if (ch.type === 'multiple') {
+    card.innerHTML = `
+      <div class="challenge-type">🎯 Multiple Choice</div>
+      <div class="challenge-question">${ch.question}</div>
+      <div class="challenge-hint">${ch.hint}</div>
+      <div class="options-grid">
+        ${ch.options.map((opt, i) => `
+          <button class="option-btn" onclick="answerMultiple(${i}, ${ch.correct}, this)">
+            <span class="option-letter">${String.fromCharCode(65+i)}</span>
+            ${opt}
+          </button>
+        `).join('')}
+      </div>
+    `;
+  } else if (ch.type === 'fill') {
+    card.innerHTML = `
+      <div class="challenge-type">✍️ Fill in the Blank</div>
+      <div class="challenge-question">${ch.question}</div>
+      <div class="challenge-hint">${ch.hint}</div>
+      <input class="fill-input" id="fill-input" placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false" />
+      <button class="btn-check" onclick="checkFill('${ch.answer}')">Check Answer ✓</button>
+    `;
+    setTimeout(() => document.getElementById('fill-input')?.focus(), 300);
+  } else if (ch.type === 'order') {
+    wordOrder = [];
+    const shuffled = [...ch.words].sort(() => Math.random() - 0.5);
+    card.innerHTML = `
+      <div class="challenge-type">🔀 Word Order</div>
+      <div class="challenge-question">${ch.question}</div>
+      <div class="challenge-hint">${ch.hint}</div>
+      <div class="word-drop-zone" id="drop-zone">
+        <span style="color:var(--text-muted);font-size:13px">Tap words to build the sentence</span>
+      </div>
+      <div class="word-bank" id="word-bank">
+        ${shuffled.map((w, i) => `
+          <div class="word-chip" onclick="addWord('${w}', ${i}, this)">${w}</div>
+        `).join('')}
+      </div>
+      <button class="btn-check" onclick="checkOrder('${ch.answer}')">Check Answer ✓</button>
+    `;
+  }
+}
+
+function addWord(word, idx, el) {
+  if (el.classList.contains('placed')) return;
+  wordOrder.push(word);
+  el.classList.add('placed');
+
+  const zone = document.getElementById('drop-zone');
+  zone.classList.add('has-words');
+
+  // Remove placeholder
+  const placeholder = zone.querySelector('span');
+  if (placeholder) placeholder.remove();
+
+  const chip = document.createElement('div');
+  chip.className = 'word-chip selected';
+  chip.textContent = word;
+  chip.onclick = () => {
+    wordOrder = wordOrder.filter(w => w !== word);
+    chip.remove();
+    el.classList.remove('placed');
+    if (!zone.children.length) {
+      const sp = document.createElement('span');
+      sp.style.cssText = 'color:var(--text-muted);font-size:13px';
+      sp.textContent = 'Tap words to build the sentence';
+      zone.appendChild(sp);
+      zone.classList.remove('has-words');
+    }
+  };
+  zone.appendChild(chip);
+}
+
+function answerMultiple(chosen, correct, btnEl) {
+  if (challengeAnswered) return;
+  challengeAnswered = true;
+
+  const allBtns = document.querySelectorAll('.option-btn');
+  allBtns.forEach((b, i) => {
+    b.style.pointerEvents = 'none';
+    if (i === correct) b.classList.add('correct');
+    else if (i === chosen && chosen !== correct) b.classList.add('wrong');
+  });
+
+  const isCorrect = chosen === correct;
+  if (isCorrect) { challengeScore++; addXP(challengeList[challengeIdx].xp); }
+  updateDot(challengeIdx, isCorrect);
+  showFeedback(isCorrect);
+
+  setTimeout(nextChallenge, 1400);
+}
+
+function checkFill(answer) {
+  if (challengeAnswered) return;
+  const input = document.getElementById('fill-input');
+  const val = (input?.value || '').trim().toLowerCase();
+  const isCorrect = val === answer.toLowerCase();
+  challengeAnswered = true;
+
+  if (input) {
+    input.classList.add(isCorrect ? 'correct' : 'wrong');
+    input.disabled = true;
+  }
+
+  if (isCorrect) { challengeScore++; addXP(challengeList[challengeIdx].xp); }
+  updateDot(challengeIdx, isCorrect);
+  showFeedback(isCorrect, isCorrect ? '' : `Answer: "${answer}"`);
+
+  setTimeout(nextChallenge, 1600);
+}
+
+function checkOrder(answer) {
+  if (challengeAnswered) return;
+  const attempt = wordOrder.join(' ');
+  const isCorrect = attempt.toLowerCase() === answer.toLowerCase();
+  challengeAnswered = true;
+
+  const zone = document.getElementById('drop-zone');
+  if (zone) {
+    zone.style.borderColor = isCorrect ? 'var(--accent-green)' : '#f87171';
+    zone.style.background = isCorrect ? 'rgba(52,211,153,0.08)' : 'rgba(248,113,113,0.08)';
+  }
+
+  if (isCorrect) { challengeScore++; addXP(challengeList[challengeIdx].xp); }
+  updateDot(challengeIdx, isCorrect);
+  showFeedback(isCorrect, isCorrect ? '' : `Correct: "${answer}"`);
+
+  setTimeout(nextChallenge, 1800);
+}
+
+function nextChallenge() {
+  challengeIdx++;
+  renderChallenge();
+}
+
+function showChallengeComplete() {
+  const total = challengeList.reduce((s,c) => s + c.xp, 0);
+  state.challengesDone++;
+  saveState();
+
+  document.getElementById('challenge-card').innerHTML = `
+    <div style="text-align:center;padding:20px 0">
+      <div style="font-size:60px;margin-bottom:16px">${challengeScore >= 4 ? '🏆' : challengeScore >= 2 ? '⭐' : '💪'}</div>
+      <div class="challenge-type" style="text-align:center;font-size:18px;color:var(--text-primary);text-transform:none;letter-spacing:0">
+        Challenge Complete!
+      </div>
+      <div style="font-size:14px;color:var(--text-secondary);margin:8px 0 20px">
+        You got <strong style="color:var(--text-primary)">${challengeScore} out of 5</strong> correct
+      </div>
+      <div style="background:var(--bg-elevated);border-radius:var(--radius-md);padding:16px;margin-bottom:20px">
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">XP Earned Today</div>
+        <div style="font-family:var(--font-display);font-size:28px;font-weight:800;background:var(--gradient-a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+          +${challengeScore * 10}
+        </div>
+      </div>
+      <button class="btn-primary" onclick="initChallenge()" style="max-width:100%">Try Again 🔄</button>
+    </div>
+  `;
+}
+
+/* =============================================
+   PROFILE UI
+   ============================================= */
+const ACHIEVEMENTS = [
+  { id:'first_phrase',  icon:'🗣️', name:'First Words',       desc:'Learned your first phrase',         req: () => state.phrasesLearned >= 1 },
+  { id:'streak3',       icon:'🔥', name:'On Fire',           desc:'3-day streak',                       req: () => state.streak >= 3 },
+  { id:'xp100',         icon:'⭐', name:'XP Hunter',         desc:'Earned 100 total XP',                req: () => state.xp >= 100 },
+  { id:'phrases10',     icon:'📚', name:'Phrase Collector',  desc:'Learned 10 phrases',                 req: () => state.phrasesLearned >= 10 },
+  { id:'challenge1',    icon:'🏆', name:'First Challenge',   desc:'Completed your first challenge',     req: () => state.challengesDone >= 1 },
+  { id:'streak7',       icon:'💫', name:'Week Warrior',      desc:'7-day streak — incredible!',         req: () => state.streak >= 7 },
+];
+
+function refreshProfileUI() {
+  const xpNeeded = xpForLevel(state.level);
+  const pct = Math.min((state.xp / xpNeeded) * 100, 100);
+
+  document.getElementById('profile-level-badge').textContent = 'Lv. ' + state.level;
+  document.getElementById('xp-level').textContent = state.level;
+  document.getElementById('xp-current').textContent = state.xp;
+  document.getElementById('xp-next').textContent = xpNeeded;
+  document.getElementById('xp-progress-bar').style.width = pct + '%';
+
+  const levelNames = ['Beginner','Learner','Intermediate','Advanced','Fluent','Native-like'];
+  const lvlName = levelNames[Math.min(state.level - 1, levelNames.length - 1)];
+  document.getElementById('profile-level-tag').textContent = '⚡ ' + lvlName;
+
+  document.getElementById('p-streak').textContent = state.streak;
+  document.getElementById('p-xp').textContent = state.xp + (state.level - 1) * 100;
+  document.getElementById('p-phrases').textContent = state.phrasesLearned;
+  document.getElementById('p-challenges').textContent = state.challengesDone;
+
+  renderAchievements();
+}
+
+function renderAchievements() {
+  const list = document.getElementById('achievements-list');
+  list.innerHTML = ACHIEVEMENTS.map(a => {
+    const unlocked = a.req();
+    return `
+      <div class="achievement-item ${unlocked ? '' : 'locked'}">
+        <div class="achievement-icon">${a.icon}</div>
+        <div>
+          <div class="achievement-name">${a.name}</div>
+          <div class="achievement-desc">${a.desc}</div>
+        </div>
+        ${unlocked ? `<div class="achievement-check"><svg viewBox="0 0 12 10"><polyline points="1,5 4.5,9 11,1"/></svg></div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function checkAchievements() {
+  // Trigger refresh silently
+  if (currentScreen === 'profile') renderAchievements();
+}
+
+/* =============================================
+   FEEDBACK & LEVEL UP
+   ============================================= */
+function showFeedback(correct, extra = '') {
+  const toast = document.getElementById('feedback-toast');
+  toast.className = 'feedback-toast ' + (correct ? 'correct' : 'wrong');
+  toast.textContent = correct
+    ? ['Correct! 🎉', 'Perfect! ✨', 'Awesome! 🔥', 'Nailed it! 💪'][Math.floor(Math.random()*4)]
+    : (extra || ['Wrong! Try again 😅', 'Not quite! 🤔', 'Keep going! 💪'][Math.floor(Math.random()*3)]);
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+function showLevelUp(newLvl) {
+  document.getElementById('new-level').textContent = newLvl;
+  document.getElementById('level-up-overlay').classList.add('show');
+}
+
+function dismissLevelUp() {
+  document.getElementById('level-up-overlay').classList.remove('show');
+}
+
+/* =============================================
+   REFRESH ALL UI
+   ============================================= */
+function refreshAllUI() {
+  document.getElementById('learn-xp-display').textContent = '⭐ ' + state.xp;
+  document.getElementById('challenge-xp').textContent = state.xp;
+  if (currentScreen === 'home') refreshHomeUI();
+  if (currentScreen === 'profile') refreshProfileUI();
+}
+
+/* =============================================
+   EVENT LISTENERS
+   ============================================= */
+document.getElementById('btn-start').addEventListener('click', function(e) {
+  addRipple(this, e);
+  setTimeout(() => navigateTo('home'), 100);
+});
+
+document.getElementById('btn-continue').addEventListener('click', function() {
+  navigateTo('learn');
+});
+
+document.getElementById('home-avatar-btn').addEventListener('click', function() {
+  navigateTo('profile');
+});
+
+// Audio button — Learn screen
+document.getElementById('audio-btn').addEventListener('click', function() {
+  const text = document.getElementById('phrase-en').textContent;
+  playAudio(text, this);
+});
+
+// Home audio
+document.getElementById('home-audio-btn').addEventListener('click', function() {
+  const text = document.getElementById('home-phrase-en').textContent;
+  playAudio(text, this);
+});
+
+// Repeat button
+document.getElementById('repeat-btn').addEventListener('click', function() {
+  const card = document.getElementById('phrase-card');
+  card.style.transform = 'scale(0.97)';
+  setTimeout(() => { card.style.transform = ''; }, 150);
+  const text = document.getElementById('phrase-en').textContent;
+  playAudio(text, document.getElementById('audio-btn'));
+});
+
+// Next phrase
+document.getElementById('btn-next-phrase').addEventListener('click', function(e) {
+  addRipple(this, e);
+  currentPhraseIdx = (currentPhraseIdx + 1) % filteredPhrases.length;
+
+  // Track progress
+  state.phrasesLearned++;
+  state.dailyPhrases = Math.min(state.dailyPhrases + 1, 10);
+  addXP(5);
+  saveState();
+
+  renderPhrase(true);
+});
+
+/* =============================================
+   BOOT
+   ============================================= */
+function boot() {
+  initParticles();
+  refreshHomeUI();
+
+  // Staggered entrance on splash
+  setTimeout(() => {
+    document.querySelector('.splash-logo').style.animation = 'pulse-logo 3s ease-in-out infinite';
+  }, 100);
+}
+
+boot();
+</script>
+</body>
+</html>
